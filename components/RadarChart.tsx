@@ -18,6 +18,34 @@ interface RadarChartProps {
   scores: DimensionScores;
 }
 
+interface AngleTickProps {
+  x?: number;
+  y?: number;
+  textAnchor?: "start" | "middle" | "end" | "inherit";
+  payload?: { value?: string };
+}
+
+// Wrap multi-word dimension labels onto separate lines so long labels
+// (e.g. "Technology Infrastructure") don't overflow and clip on narrow viewports.
+function WrappedAngleTick({ x = 0, y = 0, textAnchor, payload }: AngleTickProps) {
+  const words = (payload?.value ?? "").split(" ");
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor={textAnchor}
+      fill="#475569"
+      fontSize={12}
+    >
+      {words.map((word, index) => (
+        <tspan key={word + index} x={x} dy={index === 0 ? 0 : 14}>
+          {word}
+        </tspan>
+      ))}
+    </text>
+  );
+}
+
 export default function RadarChart({ scores }: RadarChartProps) {
   const data = DIMENSION_KEYS.map((key) => ({
     dimension: DIMENSION_LABELS[key],
@@ -27,12 +55,9 @@ export default function RadarChart({ scores }: RadarChartProps) {
   return (
     <div className="h-[340px] w-full sm:h-[420px]">
       <ResponsiveContainer width="100%" height="100%">
-        <ReRadarChart data={data} outerRadius="72%">
+        <ReRadarChart data={data} outerRadius="62%" margin={{ top: 8, right: 40, bottom: 8, left: 40 }}>
           <PolarGrid stroke="#e2e8f0" />
-          <PolarAngleAxis
-            dataKey="dimension"
-            tick={{ fill: "#475569", fontSize: 12 }}
-          />
+          <PolarAngleAxis dataKey="dimension" tick={<WrappedAngleTick />} />
           <PolarRadiusAxis
             angle={90}
             domain={[0, 5]}
