@@ -7,6 +7,7 @@ import {
   type ReadinessTier,
 } from "@/lib/scoring";
 import type { Recommendations, RecommendRequest } from "@/lib/types";
+import { checkRateLimit } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
 
@@ -99,6 +100,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: "Request must include scores, tier, and topGaps." },
       { status: 400 }
+    );
+  }
+
+  // Throttle abuse: a handful of assessments per IP per day.
+  const rate = await checkRateLimit(req);
+  if (!rate.success) {
+    const hours = Math.ceil(rate.retryAfterSeconds / 3600);
+    return NextResponse.json(
+      {
+        error: `You've reached the daily limit of ${rate.limit} assessments. Please try again in about ${hours} hour${
+          hours === 1 ? "" : "s"
+        }.`,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rate.retryAfterSeconds),
+          "X-RateLimit-Limit": String(rate.limit),
+          "X-RateLimit-Remaining": String(rate.remaining),
+        },
+      }
     );
   }
 

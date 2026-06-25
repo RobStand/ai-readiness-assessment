@@ -44,6 +44,20 @@ The `/api/recommend` route returns a clear error if the key is missing, so the
 rest of the app (scoring, radar chart, dimension cards, share link) works
 without it.
 
+### Rate limiting (optional)
+
+`/api/recommend` supports IP-based rate limiting (5 assessments per IP per day)
+via [Upstash Redis](https://upstash.com). Add the following to `.env.local`:
+
+```
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
+```
+
+If these are omitted, rate limiting is silently disabled — handy for local
+development. When the limit is exceeded the route responds with `429` and a
+`Retry-After` header.
+
 ## Scripts
 
 | Command | Description |
