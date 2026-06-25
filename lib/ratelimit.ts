@@ -12,17 +12,31 @@ import type { NextRequest } from "next/server";
 
 const MAX_REQUESTS_PER_DAY = 5;
 
+function hasUpstashConfig(): boolean {
+  return Boolean(
+    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  );
+}
+
+// Log once, when this module is first loaded (i.e. on the first request that
+// reaches the recommend route), so the active mode is visible at a glance.
+console.log(
+  hasUpstashConfig()
+    ? `[ratelimit] enabled — ${MAX_REQUESTS_PER_DAY} assessments per IP per day (Upstash Redis)`
+    : "[ratelimit] disabled — set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to enable"
+);
+
 let ratelimit: Ratelimit | null = null;
 
 function getRatelimit(): Ratelimit | null {
   if (ratelimit) return ratelimit;
-
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return null;
+  if (!hasUpstashConfig()) return null;
 
   ratelimit = new Ratelimit({
-    redis: new Redis({ url, token }),
+    redis: new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    }),
     // Up to MAX_REQUESTS_PER_DAY assessments per IP, rolling 24-hour window.
     limiter: Ratelimit.slidingWindow(MAX_REQUESTS_PER_DAY, "1 d"),
     analytics: true,
