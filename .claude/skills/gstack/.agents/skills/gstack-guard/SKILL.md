@@ -5,7 +5,7 @@ description: |
   Combines /careful (warns before rm -rf, DROP TABLE, force-push, etc.) with
   /freeze (blocks edits outside a specified directory). Use for maximum safety
   when touching prod or debugging live systems. Use when asked to "guard mode",
-  "full safety", "lock it down", or "maximum safety".
+  "full safety", "lock it down", or "maximum safety". (gstack)
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
@@ -44,7 +44,8 @@ echo "$FREEZE_DIR"
 2. Ensure trailing slash and save to the freeze state file:
 ```bash
 FREEZE_DIR="${FREEZE_DIR%/}/"
-STATE_DIR="${CLAUDE_PLUGIN_DATA:-$HOME/.gstack}"
+eval "$($GSTACK_ROOT/bin/gstack-paths)"
+STATE_DIR="$GSTACK_STATE_ROOT"
 mkdir -p "$STATE_DIR"
 echo "$FREEZE_DIR" > "$STATE_DIR/freeze-dir.txt"
 echo "Freeze boundary set: $FREEZE_DIR"

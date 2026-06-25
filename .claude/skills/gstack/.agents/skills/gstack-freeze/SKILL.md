@@ -5,7 +5,7 @@ description: |
   Write outside the allowed path. Use when debugging to prevent accidentally
   "fixing" unrelated code, or when you want to scope changes to one module.
   Use when asked to "freeze", "restrict edits", "only edit this folder",
-  or "lock down edits".
+  or "lock down edits". (gstack)
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
@@ -40,7 +40,8 @@ echo "$FREEZE_DIR"
 2. Ensure trailing slash and save to the freeze state file:
 ```bash
 FREEZE_DIR="${FREEZE_DIR%/}/"
-STATE_DIR="${CLAUDE_PLUGIN_DATA:-$HOME/.gstack}"
+eval "$($GSTACK_ROOT/bin/gstack-paths)"
+STATE_DIR="$GSTACK_STATE_ROOT"
 mkdir -p "$STATE_DIR"
 echo "$FREEZE_DIR" > "$STATE_DIR/freeze-dir.txt"
 echo "Freeze boundary set: $FREEZE_DIR"

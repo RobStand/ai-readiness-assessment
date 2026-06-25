@@ -9,9 +9,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { getProjectEvalDir } from './eval-store';
+import { hermeticChildEnv, isHermeticEnabled } from './hermetic-env';
 
 const GSTACK_DEV_DIR = path.join(os.homedir(), '.gstack-dev');
-const HEARTBEAT_PATH = path.join(GSTACK_DEV_DIR, 'e2e-live.json');
+const HEARTBEAT_PATH = path.join(GSTACK_DEV_DIR, 'e2e-live.json'); // heartbeat stays global
+const PROJECT_DIR = path.dirname(getProjectEvalDir()); // ~/.gstack/projects/$SLUG/
 
 /** Sanitize test name for use as filename: strip leading slashes, replace / with - */
 export function sanitizeTestName(name: string): string {
@@ -124,6 +127,10 @@ export async function runSkillTest(options: {
   runId?: string;
   /** Model to use. Defaults to claude-sonnet-4-6 (overridable via EVALS_MODEL env). */
   model?: string;
+  /** Extra env vars merged into the spawned claude -p process. Useful for
+   *  per-test GSTACK_HOME overrides so the test doesn't have to spell out
+   *  env setup in the prompt itself. */
+  env?: Record<string, string>;
 }): Promise<SkillTestResult> {
   const {
     prompt,
@@ -133,6 +140,7 @@ export async function runSkillTest(options: {
     timeout = 120_000,
     testName,
     runId,
+    env: extraEnv,
   } = options;
   const model = options.model ?? process.env.EVALS_MODEL ?? 'claude-sonnet-4-6';
 
@@ -144,7 +152,7 @@ export async function runSkillTest(options: {
   const safeName = testName ? sanitizeTestName(testName) : null;
   if (runId) {
     try {
-      runDir = path.join(GSTACK_DEV_DIR, 'e2e-runs', runId);
+      runDir = path.join(PROJECT_DIR, 'e2e-runs', runId);
       fs.mkdirSync(runDir, { recursive: true });
     } catch { /* non-fatal */ }
   }
@@ -160,6 +168,10 @@ export async function runSkillTest(options: {
     '--max-turns', String(maxTurns),
     '--allowed-tools', ...allowedTools,
   ];
+  // Hermetic children get zero MCP servers (no --mcp-config is passed).
+  // Gated on the same call-time check as the env scrub so EVALS_HERMETIC=0
+  // restores operator MCP along with the operator env.
+  if (isHermeticEnabled()) args.push('--strict-mcp-config');
 
   // Write prompt to a temp file OUTSIDE workingDirectory to avoid race conditions
   // where afterAll cleanup deletes the dir before cat reads the file (especially
@@ -169,6 +181,14 @@ export async function runSkillTest(options: {
 
   const proc = Bun.spawn(['sh', '-c', `cat "${promptFile}" | claude ${args.map(a => `"${a}"`).join(' ')}`], {
     cwd: workingDirectory,
+    // Hermetic by default (see test/helpers/hermetic-env.ts): operator
+    // session context (CONDUCTOR_*, CLAUDECODE, ~/.claude config, ~/.gstack)
+    // never reaches the child; EVALS_HERMETIC=0 restores the legacy env.
+    // Default GSTACK_HEADLESS=1 so eval/E2E runs classify as headless (BLOCK on an
+    // AskUserQuestion failure rather than emit a prose question no human reads). A
+    // suite exercising the INTERACTIVE prose-fallback path opts out by passing
+    // `env: { GSTACK_HEADLESS: '' }` — extraEnv wins because it spreads last.
+    env: hermeticChildEnv({ GSTACK_HEADLESS: '1', ...extraEnv }),
     stdout: 'pipe',
     stderr: 'pipe',
   });
@@ -301,12 +321,13 @@ export async function runSkillTest(options: {
 
   // Use resultLine for structured result data
   if (resultLine) {
-    if (resultLine.is_error) {
+    if (resultLine.subtype === 'success' && resultLine.is_error) {
       // claude -p can return subtype=success with is_error=true (e.g. API connection failure)
       exitReason = 'error_api';
     } else if (resultLine.subtype === 'success') {
       exitReason = 'success';
     } else if (resultLine.subtype) {
+      // Preserve known subtypes like error_max_turns even if is_error is set
       exitReason = resultLine.subtype;
     }
   }

@@ -1,0 +1,1 @@
+/Users/robert/source/ai-readiness-assessment/.claude/skills/gstack/setup-gbrain/SKILL.md
