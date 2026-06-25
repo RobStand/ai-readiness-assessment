@@ -1,5 +1,17 @@
 import Link from "next/link";
 import { DIMENSIONS } from "@/data/questions";
+import RadarChart from "@/components/RadarChart";
+import type { DimensionScores } from "@/lib/scoring";
+
+// Illustrative profile so first-time visitors can see the deliverable at a glance.
+const SAMPLE_SCORES: DimensionScores = {
+  data_foundation: 4.3,
+  technology_infrastructure: 3.8,
+  talent_and_skills: 3.2,
+  governance_and_risk: 3.6,
+  use_case_pipeline: 2.9,
+  change_readiness: 3.7,
+};
 
 export default function LandingPage() {
   return (
@@ -14,26 +26,37 @@ export default function LandingPage() {
           </span>
         </header>
 
-        <div className="max-w-2xl">
-          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-            Understand your organization&apos;s AI readiness
-          </h1>
-          <p className="mt-5 text-lg leading-relaxed text-slate-600">
-            A focused, ~5-minute assessment that scores your organization across
-            six dimensions and returns a personalized readiness profile with
-            practical, prioritized recommendations.
-          </p>
-
-          <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-            <Link
-              href="/assessment"
-              className="inline-flex items-center justify-center rounded-lg bg-brand-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-brand-700"
-            >
-              Start assessment
-            </Link>
-            <p className="text-sm text-slate-500">
-              No account required. Results are private and shareable via link.
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          <div className="max-w-2xl">
+            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+              Understand your organization&apos;s AI readiness
+            </h1>
+            <p className="mt-5 text-lg leading-relaxed text-slate-600">
+              A focused, ~5-minute assessment that scores your organization
+              across six dimensions and returns a personalized readiness profile
+              with practical, prioritized recommendations.
             </p>
+
+            <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+              <Link
+                href="/assessment"
+                className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-brand-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-brand-700"
+              >
+                Start assessment
+              </Link>
+              <p className="text-sm text-slate-500">
+                No account required. Results are private and shareable via link.
+              </p>
+            </div>
+          </div>
+
+          <div className="hidden lg:block">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Sample readiness profile
+              </p>
+              <RadarChart scores={SAMPLE_SCORES} />
+            </div>
           </div>
         </div>
 
