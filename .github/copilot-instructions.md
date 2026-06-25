@@ -88,8 +88,13 @@ commit it or hardcode keys.
 ## gstack
 
 This environment has [gstack](https://github.com/garrytan/gstack) skills
-installed. **Use the `/browse` skill for all web browsing — never use
+installed, vendored into `.claude/skills/gstack` so teammates get them on
+`git clone`. **Use the `/browse` skill for all web browsing — never use
 `mcp__claude-in-chrome__*` tools.**
+
+If gstack skills aren't working, run `cd .claude/skills/gstack && ./setup` to
+build the browse binary and register the skills (the binary and `node_modules`
+are git-ignored and rebuilt locally).
 
 Available gstack skills: `/office-hours`, `/plan-ceo-review`, `/plan-eng-review`,
 `/plan-design-review`, `/design-consultation`, `/design-shotgun`, `/design-html`,
