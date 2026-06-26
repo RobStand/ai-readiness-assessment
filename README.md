@@ -1,11 +1,27 @@
 # AI Readiness Assessment
 
-A standalone Next.js web app that helps organizations assess their AI readiness
-across six dimensions. Users answer ~25 questions and receive a scored radar
-chart profile, a readiness tier, and Claude-generated personalized
-recommendations. Results are fully shareable via URL — no database required.
+A focused, ~5-minute web app that scores your organization's AI readiness across
+six dimensions, shows you a clear readiness profile, and hands you practical,
+prioritized recommendations. No account, no signup, no database — your answers
+live only in the URL, so results are private and easy to share.
 
-## Six dimensions
+![AI Readiness Assessment — hero and sample readiness profile](docs/screenshot.png)
+
+## What it does
+
+You answer a short set of multiple-choice questions. The app then:
+
+- **Scores six dimensions** of readiness and plots them on a radar chart so you
+  can see your shape at a glance — where you're strong, where you're thin.
+- **Places you in a readiness tier** with an overall score, so the result is easy
+  to talk about with leadership.
+- **Highlights your biggest gaps** and generates personalized, prioritized
+  recommendations (powered by Claude) — concrete next steps, not platitudes.
+- **Gives you a shareable link.** Everything needed to reproduce your results is
+  encoded in the URL, so you can send it to a colleague and they see exactly what
+  you saw. No login, nothing stored on a server.
+
+### The six dimensions
 
 1. **Data Foundation** — Data quality, accessibility, and governance
 2. **Technology Infrastructure** — Cloud posture, integration, security controls
@@ -14,13 +30,34 @@ recommendations. Results are fully shareable via URL — no database required.
 5. **Use Case Pipeline** — Identifying, prioritizing, and scoping AI opportunities
 6. **Change Readiness** — Leadership alignment, change management, culture
 
-## Tech stack
+## What you get out of it
 
-- **Next.js** (App Router) + **TypeScript**
-- **Tailwind CSS** for styling
-- **Recharts** for the radar chart
-- **@anthropic-ai/sdk** for personalized recommendations
-- No database — answers are encoded into the results URL (`?r=<base64>`)
+- A **shared vocabulary** for AI readiness across your team — six dimensions
+  everyone can point at.
+- An **honest snapshot** of where you actually are, instead of a vague feeling
+  that you're "behind" or "ahead."
+- A **prioritized starting point.** The recommendations focus on your lowest
+  dimensions first, so you know what to fix before you fix it.
+- Something **shareable in 5 minutes** that you can bring to a planning
+  conversation, a board update, or a kickoff.
+
+## Why I built it
+
+I'm Robert Standefer III. After years of working alongside large enterprises on
+their technology and AI efforts, I kept seeing the same pattern: teams wanted to
+"do AI," but had no shared, honest way to talk about whether they were actually
+ready. Conversations stalled on vibes. Budgets got committed before the
+foundations existed. The same blind spots — data, governance, change management —
+showed up again and again.
+
+So I built the assessment I wished those teams had on day one: a quick, structured
+way to get a real picture, in plain language, that anyone in the organization can
+take and share. It's deliberately lightweight — no sales call, no account — because
+the point is to start a better conversation, fast.
+
+**The questions are based on real-world experience working with large
+enterprises.** They reflect the patterns, gaps, and failure modes I've seen
+firsthand inside big organizations, not a generic checklist.
 
 ## Getting started
 
@@ -41,8 +78,8 @@ ANTHROPIC_API_KEY=your_key_here
 ```
 
 The `/api/recommend` route returns a clear error if the key is missing, so the
-rest of the app (scoring, radar chart, dimension cards, share link) works
-without it.
+rest of the app (scoring, radar chart, dimension cards, share link) works without
+it.
 
 ### Rate limiting (optional)
 
@@ -77,6 +114,17 @@ development. When the limit is exceeded the route responds with `429` and a
   radar chart and dimension cards, then calls `/api/recommend` for Claude advice.
 - **`app/api/recommend/route.ts`** — builds a prompt from scores/tier/gaps and
   asks Claude (`claude-sonnet-4-6`) to return structured JSON recommendations.
+
+Because results are recomputed purely from the URL, opening a results link in a
+new tab always reproduces the same page — nothing is stored server-side.
+
+## Tech stack
+
+- **Next.js** (App Router) + **TypeScript**
+- **Tailwind CSS** for styling
+- **Recharts** for the radar chart
+- **@anthropic-ai/sdk** for personalized recommendations
+- No database — answers are encoded into the results URL (`?r=<base64>`)
 
 ## Tests
 
