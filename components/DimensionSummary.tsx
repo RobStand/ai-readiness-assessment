@@ -5,40 +5,40 @@ interface DimensionSummaryProps {
   name: string;
   description: string;
   score: number;
-}
-
-function barColor(score: number): string {
-  if (score >= 4.0) return "bg-emerald-500";
-  if (score >= 3.0) return "bg-brand-500";
-  if (score >= 2.0) return "bg-amber-500";
-  return "bg-rose-500";
+  rank: number;
+  isGap?: boolean;
 }
 
 export default function DimensionSummary({
   name,
   description,
   score,
+  rank,
+  isGap = false,
 }: DimensionSummaryProps) {
   const pct = (score / 5) * 100;
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="mb-1 flex items-baseline justify-between">
-        <h3 className="text-sm font-semibold text-slate-800">{name}</h3>
-        <span className="text-sm font-semibold tabular-nums text-slate-900">
+    <div className="rounded-lg border border-hairline bg-surface p-5">
+      <div className="mb-1 flex items-baseline justify-between gap-2">
+        <div className="flex items-baseline gap-2">
+          <span className="font-mono text-xs font-semibold text-faint">
+            {String(rank).padStart(2, "0")}
+          </span>
+          <h3 className="text-sm font-semibold text-ink">{name}</h3>
+        </div>
+        <span className="font-mono text-sm font-semibold text-ink">
           {score.toFixed(1)}
-          <span className="text-slate-400"> / 5.0</span>
+          <span className="text-faint"> / 5</span>
         </span>
       </div>
-      <div className="mb-3 mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+      <div className="mb-3 mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
         <div
-          className={`h-full rounded-full ${barColor(score)}`}
+          className={`h-full rounded-full ${isGap ? "bg-caution" : "bg-accent"}`}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <p className="text-xs leading-relaxed text-slate-500">{description}</p>
-      <p className="mt-2 text-xs font-medium text-slate-600">
-        {interpretScore(score)}
-      </p>
+      <p className="text-xs leading-relaxed text-muted">{description}</p>
+      <p className="mt-2 text-xs font-medium text-ink">{interpretScore(score)}</p>
     </div>
   );
 }

@@ -11,7 +11,7 @@ interface RecommendationPanelProps {
 }
 
 function SkeletonLine({ w }: { w: string }) {
-  return <div className={`h-3 animate-pulse rounded bg-slate-200 ${w}`} />;
+  return <div className={`h-3 animate-pulse rounded bg-surface-2 ${w}`} />;
 }
 
 export default function RecommendationPanel({
@@ -24,10 +24,10 @@ export default function RecommendationPanel({
 
   if (loading) {
     return (
-      <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center gap-2 text-sm font-medium text-brand-700">
-          <span className="h-2 w-2 animate-ping rounded-full bg-brand-500" />
-          Generating your personalized recommendations…
+      <div className="space-y-4 rounded-lg border border-hairline bg-surface p-6">
+        <div className="flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-wide text-accent">
+          <span className="h-2 w-2 animate-ping rounded-full bg-accent" />
+          Generating recommendations…
         </div>
         <div className="space-y-2">
           <SkeletonLine w="w-full" />
@@ -45,12 +45,15 @@ export default function RecommendationPanel({
 
   if (error) {
     return (
-      <div className="rounded-xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-800 shadow-sm">
-        <p className="font-medium">We couldn&apos;t generate recommendations.</p>
-        <p className="mt-1 text-rose-700">{error}</p>
+      <div className="rounded-lg border border-hairline bg-critical-soft p-6 text-sm shadow-none">
+        <p className="font-semibold text-critical">
+          <span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-critical align-middle" />
+          We couldn&apos;t generate recommendations.
+        </p>
+        <p className="mt-1 text-muted">{error}</p>
         <button
           onClick={onRetry}
-          className="mt-3 rounded-lg bg-rose-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-rose-700"
+          className="mt-3 rounded-md border border-hairline bg-surface px-3 py-1.5 text-sm font-medium text-ink transition hover:border-accent-line"
         >
           Try again
         </button>
@@ -62,39 +65,35 @@ export default function RecommendationPanel({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-brand-200 bg-brand-50 p-6 shadow-sm">
-        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-brand-700">
-          Overall assessment
-        </h3>
-        <p className="text-base leading-relaxed text-slate-800">{data.overall}</p>
+      <div className="rounded-lg border border-accent-line bg-accent-soft p-6">
+        <h3 className="label-mono !text-accent">Overall assessment</h3>
+        <p className="mt-2 text-base leading-relaxed text-ink">{data.overall}</p>
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-          Where to focus first
-        </h3>
+        <h3 className="label-mono !text-muted">Where to focus first</h3>
         {data.gaps.map((gap, i) => {
           const isOpen = open[i] ?? false;
           return (
             <div
               key={gap.dimension}
-              className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+              className="overflow-hidden rounded-lg border border-hairline bg-surface"
             >
               <button
                 onClick={() => setOpen((o) => ({ ...o, [i]: !isOpen }))}
-                className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left hover:bg-slate-50"
+                className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition hover:bg-surface-2"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700">
-                      {i + 1}
+                    <span className="flex h-6 w-6 items-center justify-center rounded-sm bg-accent-soft font-mono text-xs font-semibold text-accent">
+                      {String(i + 1).padStart(2, "0")}
                     </span>
-                    <span className="font-semibold text-slate-800">{gap.name}</span>
+                    <span className="font-semibold text-ink">{gap.name}</span>
                   </div>
-                  <p className="mt-1 text-sm text-slate-500">{gap.interpretation}</p>
+                  <p className="mt-1 text-sm text-muted">{gap.interpretation}</p>
                 </div>
                 <span
-                  className={`shrink-0 text-slate-400 transition-transform ${
+                  className={`shrink-0 text-faint transition-transform ${
                     isOpen ? "rotate-180" : ""
                   }`}
                 >
@@ -102,10 +101,10 @@ export default function RecommendationPanel({
                 </span>
               </button>
               {isOpen && (
-                <ul className="space-y-2 border-t border-slate-100 px-5 py-4">
+                <ul className="space-y-2 border-t border-hairline-2 px-5 py-4">
                   {gap.actions.map((action, j) => (
-                    <li key={j} className="flex gap-2 text-sm text-slate-700">
-                      <span className="mt-0.5 text-brand-500">→</span>
+                    <li key={j} className="flex gap-2 text-sm text-ink">
+                      <span className="mt-0.5 font-mono text-accent">→</span>
                       <span>{action}</span>
                     </li>
                   ))}

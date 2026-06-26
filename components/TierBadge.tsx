@@ -1,18 +1,30 @@
 import type { ReadinessTier } from "@/lib/scoring";
 
-const TIER_STYLES: Record<ReadinessTier, string> = {
-  Foundation: "bg-slate-100 text-slate-700 ring-slate-300",
-  Developing: "bg-brand-100 text-brand-700 ring-brand-300",
-  Scaling: "bg-emerald-100 text-emerald-700 ring-emerald-300",
-  Leading: "bg-purple-100 text-purple-700 ring-purple-300",
-};
+const TIER_ORDER: ReadinessTier[] = [
+  "Foundation",
+  "Developing",
+  "Scaling",
+  "Leading",
+];
 
+// Mono, uppercase, radius-sm tier strip. The achieved tier is filled cobalt;
+// the rest read as a faint sequence so the badge doubles as a scale readout.
 export default function TierBadge({ tier }: { tier: ReadinessTier }) {
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-semibold ring-1 ring-inset ${TIER_STYLES[tier]}`}
-    >
-      {tier}
-    </span>
+    <div className="inline-flex flex-wrap items-center gap-1 rounded-sm border border-hairline bg-surface-2 p-1">
+      {TIER_ORDER.map((t) => {
+        const active = t === tier;
+        return (
+          <span
+            key={t}
+            className={`rounded-sm px-2.5 py-1 font-mono text-xs font-semibold uppercase tracking-wide transition ${
+              active ? "bg-accent text-white" : "text-faint"
+            }`}
+          >
+            {t}
+          </span>
+        );
+      })}
+    </div>
   );
 }

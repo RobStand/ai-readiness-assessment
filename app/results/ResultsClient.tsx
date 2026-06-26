@@ -10,6 +10,7 @@ import {
   computeOverallScore,
   getReadinessTier,
   getTopGaps,
+  rankDimensionsByScore,
   TIER_DESCRIPTIONS,
 } from "@/lib/scoring";
 import type { Recommendations, RecommendRequest } from "@/lib/types";
@@ -29,6 +30,11 @@ export default function ResultsClient() {
   const overall = useMemo(() => computeOverallScore(scores), [scores]);
   const tier = useMemo(() => getReadinessTier(overall), [overall]);
   const topGaps = useMemo(() => getTopGaps(scores), [scores]);
+
+  // Rank dimensions by score (highest = 01) for the mono rank chips, and mark
+  // the three lowest as gaps so their score bars read caution, not cobalt.
+  const rankByKey = useMemo(() => rankDimensionsByScore(scores), [scores]);
+  const gapSet = useMemo(() => new Set(topGaps), [topGaps]);
 
   const [recs, setRecs] = useState<Recommendations | null>(null);
   const [loading, setLoading] = useState(false);
@@ -77,16 +83,16 @@ export default function ResultsClient() {
 
   if (!hasAnswers) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
+      <main className="flex min-h-screen items-center justify-center bg-paper px-6">
         <div className="max-w-md text-center">
-          <h1 className="text-2xl font-bold text-slate-900">No results found</h1>
-          <p className="mt-2 text-slate-600">
+          <h1 className="text-2xl font-bold tracking-display text-ink">No results found</h1>
+          <p className="mt-2 text-muted">
             This results link is missing or invalid. Take the assessment to
             generate your readiness profile.
           </p>
           <Link
             href="/assessment"
-            className="mt-6 inline-flex rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-700"
+            className="mt-6 inline-flex rounded-md bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
           >
             Start assessment
           </Link>
@@ -96,59 +102,48 @@ export default function ResultsClient() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-paper">
       <div className="mx-auto max-w-3xl px-5 py-10 sm:py-14">
         <div className="mb-6">
           <Link
             href="/"
-            className="text-sm font-medium text-slate-500 hover:text-slate-700"
+            className="font-mono text-xs font-medium uppercase tracking-wide text-faint transition hover:text-ink"
           >
             ← Home
           </Link>
         </div>
 
         {/* Tier + overall */}
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <section className="rounded-card border border-hairline bg-surface p-6 sm:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-medium uppercase tracking-wide text-slate-400">
-                Your readiness tier
-              </p>
+              <p className="label-mono">Your readiness tier</p>
               <div className="mt-2">
                 <TierBadge tier={tier} />
               </div>
             </div>
             <div className="text-left sm:text-right">
-              <p className="text-sm font-medium uppercase tracking-wide text-slate-400">
-                Overall score
-              </p>
-              <p className="mt-1 text-3xl font-extrabold tabular-nums text-slate-900">
+              <p className="label-mono">Overall score</p>
+              <p className="mt-1 font-mono text-3xl font-semibold text-ink">
                 {overall.toFixed(1)}
-                <span className="text-lg font-semibold text-slate-400">
-                  {" "}
-                  / 5.0
-                </span>
+                <span className="text-lg font-medium text-faint"> / 5.0</span>
               </p>
             </div>
           </div>
-          <p className="mt-4 text-sm leading-relaxed text-slate-600">
+          <p className="mt-4 text-sm leading-relaxed text-muted">
             {TIER_DESCRIPTIONS[tier]}
           </p>
         </section>
 
         {/* Radar */}
-        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-          <h2 className="mb-2 px-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Readiness profile
-          </h2>
+        <section className="mt-6 rounded-card border border-hairline bg-surface p-4 sm:p-6">
+          <h2 className="mb-2 px-2 label-mono !text-muted">Readiness profile</h2>
           <RadarChart scores={scores} />
         </section>
 
         {/* Dimension cards */}
         <section className="mt-6">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Dimension breakdown
-          </h2>
+          <h2 className="mb-3 label-mono !text-muted">Dimension breakdown</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {DIMENSIONS.map((d) => (
               <DimensionSummary
@@ -157,6 +152,8 @@ export default function ResultsClient() {
                 name={d.name}
                 description={d.description}
                 score={scores[d.key]}
+                rank={rankByKey[d.key] ?? 0}
+                isGap={gapSet.has(d.key)}
               />
             ))}
           </div>
@@ -164,9 +161,7 @@ export default function ResultsClient() {
 
         {/* Recommendations */}
         <section className="mt-8">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Personalized recommendations
-          </h2>
+          <h2 className="mb-3 label-mono !text-muted">Personalized recommendations</h2>
           <RecommendationPanel
             loading={loading}
             error={error}
@@ -176,16 +171,16 @@ export default function ResultsClient() {
         </section>
 
         {/* Actions */}
-        <section className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-slate-200 pt-6 sm:flex-row">
+        <section className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-hairline pt-6 sm:flex-row">
           <button
             onClick={handleShare}
-            className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700"
+            className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
           >
             {copied ? "Link copied!" : "Share results"}
           </button>
           <Link
             href="/assessment"
-            className="text-sm font-medium text-slate-500 hover:text-slate-700"
+            className="text-sm font-medium text-faint transition hover:text-ink"
           >
             Retake assessment
           </Link>

@@ -4,6 +4,7 @@ import {
   computeOverallScore,
   getReadinessTier,
   getTopGaps,
+  rankDimensionsByScore,
 } from "./scoring";
 import { QUESTIONS } from "@/data/questions";
 
@@ -72,5 +73,53 @@ describe("getTopGaps", () => {
       "governance_and_risk",
       "use_case_pipeline",
     ]);
+  });
+});
+
+describe("rankDimensionsByScore", () => {
+  it("ranks highest score as 1 and lowest as 6", () => {
+    const scores = {
+      data_foundation: 5,
+      technology_infrastructure: 4,
+      talent_and_skills: 1,
+      governance_and_risk: 2,
+      use_case_pipeline: 3,
+      change_readiness: 4.5,
+    } as const;
+    const ranks = rankDimensionsByScore({ ...scores });
+    expect(ranks.data_foundation).toBe(1);
+    expect(ranks.change_readiness).toBe(2);
+    expect(ranks.technology_infrastructure).toBe(3);
+    expect(ranks.use_case_pipeline).toBe(4);
+    expect(ranks.governance_and_risk).toBe(5);
+    expect(ranks.talent_and_skills).toBe(6);
+  });
+
+  it("breaks ties by canonical dimension order (stable)", () => {
+    const scores = {
+      data_foundation: 3,
+      technology_infrastructure: 3,
+      talent_and_skills: 3,
+      governance_and_risk: 3,
+      use_case_pipeline: 3,
+      change_readiness: 3,
+    } as const;
+    const ranks = rankDimensionsByScore({ ...scores });
+    expect(ranks.data_foundation).toBe(1);
+    expect(ranks.technology_infrastructure).toBe(2);
+    expect(ranks.change_readiness).toBe(6);
+  });
+
+  it("assigns every dimension a unique rank 1..6", () => {
+    const scores = {
+      data_foundation: 4.2,
+      technology_infrastructure: 3.8,
+      talent_and_skills: 3.2,
+      governance_and_risk: 3.6,
+      use_case_pipeline: 2.9,
+      change_readiness: 3.7,
+    } as const;
+    const ranks = rankDimensionsByScore({ ...scores });
+    expect(new Set(Object.values(ranks))).toEqual(new Set([1, 2, 3, 4, 5, 6]));
   });
 });
