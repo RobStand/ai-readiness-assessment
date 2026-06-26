@@ -93,7 +93,7 @@ export default function AssessmentPage() {
         </div>
 
         {!allAnswered && (
-          <p className="mt-3 text-center text-xs text-faint">
+          <p className="mt-3 text-center text-xs text-muted">
             Answer all questions in this section to continue.
           </p>
         )}
