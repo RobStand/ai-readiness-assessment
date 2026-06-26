@@ -24,7 +24,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --paper: #0c0d0f;
     --surface: #141619;
     --surface-2: #101215;
@@ -41,6 +41,26 @@
     --critical: #e26a5b;
     --critical-soft: rgba(226, 106, 91, 0.12);
   }
+}
+
+/* Explicit manual override (set by the theme toggle). Wins over the
+   system-preference block above regardless of OS setting. */
+:root[data-theme="dark"] {
+  --paper: #0c0d0f;
+  --surface: #141619;
+  --surface-2: #101215;
+  --ink: #eceef1;
+  --muted: #9aa0a8;
+  --faint: #6a7078;
+  --hairline: #23262b;
+  --hairline-2: #1b1e22;
+  --accent: #5b7bff;
+  --accent-soft: rgba(91, 123, 255, 0.12);
+  --accent-line: rgba(91, 123, 255, 0.3);
+  --positive: #3fb07a;
+  --caution: #d69a3a;
+  --critical: #e26a5b;
+  --critical-soft: rgba(226, 106, 91, 0.12);
 }
 
 html {
