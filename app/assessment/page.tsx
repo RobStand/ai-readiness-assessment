@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { DIMENSIONS, questionsForDimension } from "@/data/questions";
@@ -24,6 +24,14 @@ export default function AssessmentPage() {
   const allAnswered = questions.every((q) => answers[q.id] !== undefined);
   const isLast = step === total - 1;
 
+  // Reset scroll to the top after the new section commits. Doing this in an
+  // effect (not inside the click handler) guarantees the new questions are
+  // already laid out, so the user lands on the first question instead of
+  // staying scrolled to where the "Next" button was.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [step]);
+
   function setAnswer(id: string, score: number) {
     setAnswers((prev) => ({ ...prev, [id]: score }));
   }
@@ -36,13 +44,11 @@ export default function AssessmentPage() {
       return;
     }
     setStep((s) => s + 1);
-    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function handleBack() {
     if (step === 0) return;
     setStep((s) => s - 1);
-    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
