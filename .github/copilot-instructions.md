@@ -104,3 +104,12 @@ Available gstack skills: `/office-hours`, `/plan-ceo-review`, `/plan-eng-review`
 `/document-generate`, `/codex`, `/cso`, `/autoplan`, `/plan-devex-review`,
 `/devex-review`, `/careful`, `/freeze`, `/guard`, `/unfreeze`, `/gstack-upgrade`,
 `/learn`.
+
+## Design System
+
+Always read `DESIGN.md` (repo root) before making any visual or UI decision. All
+font choices, colors, spacing, border radii, layout, and aesthetic direction are
+defined there — the system is **Instrument** (Hanken Grotesk + JetBrains Mono,
+cobalt `#2348FF` on cool neutrals, monospace numeric readouts). Do not deviate
+without explicit user approval. When reviewing or doing QA, flag any code that
+doesn't match `DESIGN.md`.

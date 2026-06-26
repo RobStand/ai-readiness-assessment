@@ -8,17 +8,17 @@ export default function ProgressBar({ current, total, labels }: ProgressBarProps
   const pct = Math.round((current / total) * 100);
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between text-sm">
-        <span className="font-medium text-brand-700">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-sm font-semibold text-ink">
           {labels[current - 1]}
         </span>
-        <span className="text-slate-500">
-          Section {current} of {total}
+        <span className="font-mono text-xs font-semibold text-faint">
+          {String(current).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
         <div
-          className="h-full rounded-full bg-brand-600 transition-all duration-300"
+          className="h-full rounded-full bg-accent transition-all duration-300 ease-out"
           style={{ width: `${pct}%` }}
         />
       </div>

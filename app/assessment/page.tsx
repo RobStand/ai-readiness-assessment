@@ -46,12 +46,12 @@ export default function AssessmentPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-paper">
       <div className="mx-auto max-w-2xl px-5 py-8 sm:py-12">
         <div className="mb-6">
           <Link
             href="/"
-            className="text-sm font-medium text-slate-500 hover:text-slate-700"
+            className="font-mono text-xs font-medium uppercase tracking-wide text-faint transition hover:text-ink"
           >
             ← Home
           </Link>
@@ -60,8 +60,8 @@ export default function AssessmentPage() {
         <ProgressBar current={step + 1} total={total} labels={labels} />
 
         <div className="mt-8">
-          <h1 className="text-2xl font-bold text-slate-900">{dimension.name}</h1>
-          <p className="mt-1 text-sm text-slate-500">{dimension.description}</p>
+          <h1 className="text-2xl font-bold tracking-display text-ink">{dimension.name}</h1>
+          <p className="mt-1 text-sm text-muted">{dimension.description}</p>
         </div>
 
         <div className="mt-6 space-y-4">
@@ -79,21 +79,21 @@ export default function AssessmentPage() {
           <button
             onClick={handleBack}
             disabled={step === 0}
-            className="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition enabled:hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md border border-hairline bg-surface px-5 py-2.5 text-sm font-medium text-ink transition enabled:hover:border-accent-line disabled:cursor-not-allowed disabled:opacity-40"
           >
             Back
           </button>
           <button
             onClick={handleNext}
             disabled={!allAnswered}
-            className="rounded-lg bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition enabled:hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md bg-accent px-6 py-2.5 text-sm font-semibold text-white transition enabled:hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {isLast ? "See results" : "Next"}
           </button>
         </div>
 
         {!allAnswered && (
-          <p className="mt-3 text-center text-xs text-slate-400">
+          <p className="mt-3 text-center text-xs text-faint">
             Answer all questions in this section to continue.
           </p>
         )}
