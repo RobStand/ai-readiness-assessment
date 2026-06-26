@@ -12,7 +12,7 @@ import type { NextRequest } from "next/server";
 
 const MAX_REQUESTS_PER_DAY = 5;
 
-function hasUpstashConfig(): boolean {
+export function hasUpstashConfig(): boolean {
   return Boolean(
     process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
   );

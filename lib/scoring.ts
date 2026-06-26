@@ -99,6 +99,25 @@ export function getTopGaps(scores: DimensionScores): DimensionKey[] {
     .slice(0, 3);
 }
 
+/**
+ * Rank dimensions by score (highest = rank 1) for the mono rank chips on the
+ * results page. Ties are broken by the canonical dimension order so the ranking
+ * is stable. Returns a map of dimension key → 1-based rank.
+ */
+export function rankDimensionsByScore(
+  scores: DimensionScores
+): Record<DimensionKey, number> {
+  const ordered = [...DIMENSION_KEYS].sort((a, b) => {
+    if (scores[a] !== scores[b]) return scores[b] - scores[a];
+    return DIMENSION_KEYS.indexOf(a) - DIMENSION_KEYS.indexOf(b);
+  });
+  const ranks = {} as Record<DimensionKey, number>;
+  ordered.forEach((key, index) => {
+    ranks[key] = index + 1;
+  });
+  return ranks;
+}
+
 export const TIER_DESCRIPTIONS: Record<ReadinessTier, string> = {
   Foundation:
     "You're at the beginning of the journey. Focus on building the data, governance, and leadership foundations that everything else depends on.",
