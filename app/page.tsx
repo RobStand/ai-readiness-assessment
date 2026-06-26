@@ -42,7 +42,7 @@ export default function LandingPage() {
               >
                 Start assessment
               </Link>
-              <p className="text-sm text-faint">
+              <p className="text-sm text-muted">
                 No account required. Results are private and shareable via link.
               </p>
             </div>

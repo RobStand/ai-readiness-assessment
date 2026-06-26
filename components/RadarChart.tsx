@@ -58,7 +58,7 @@ export default function RadarChart({ scores }: RadarChartProps) {
   return (
     <div className="h-[340px] w-full sm:h-[420px]">
       <ResponsiveContainer width="100%" height="100%">
-        <ReRadarChart data={data} outerRadius="62%" margin={{ top: 8, right: 40, bottom: 8, left: 40 }}>
+        <ReRadarChart data={data} outerRadius="60%" margin={{ top: 8, right: 64, bottom: 8, left: 64 }}>
           <PolarGrid stroke="var(--hairline)" />
           <PolarAngleAxis dataKey="dimension" tick={<WrappedAngleTick />} />
           <PolarRadiusAxis
