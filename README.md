@@ -43,23 +43,26 @@ You answer a short set of multiple-choice questions. The app then:
 
 ## Why I built it
 
-I'm Robert Standefer III. After years of working alongside large enterprises on
+After years of working alongside large enterprises on
 their technology and AI efforts, I kept seeing the same pattern: teams wanted to
 "do AI," but had no shared, honest way to talk about whether they were actually
 ready. Conversations stalled on vibes. Budgets got committed before the
-foundations existed. The same blind spots — data, governance, change management —
-showed up again and again.
+foundations existed. The same blind spots, like data, governance, and change management, showed up again and again.
 
 So I built the assessment I wished those teams had on day one: a quick, structured
 way to get a real picture, in plain language, that anyone in the organization can
-take and share. It's deliberately lightweight — no sales call, no account — because
+take and share. It's deliberately lightweight because
 the point is to start a better conversation, fast.
 
 **The questions are based on real-world experience working with large
-enterprises.** They reflect the patterns, gaps, and failure modes I've seen
+enterprise customers.** They reflect the patterns, gaps, and failure modes I've seen
 firsthand inside big organizations, not a generic checklist.
 
-## Getting started
+## Want to run it locally?
+
+Feel free to clone the repo or download the source as a .zip file and run it locally.
+
+### Getting started
 
 ```bash
 npm install
